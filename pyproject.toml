@@ -1,0 +1,67 @@
+[project]
+name = "schemalens"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "schemalens-api",
+    "schemalens-mcp",
+]
+
+[tool.uv.workspace]
+members = [
+    "packages/core",
+    "services/api",
+    "services/mcp",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+schemalens-api = { workspace = true }
+schemalens-mcp = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "fpdf2>=2.8.9",
+    "httpx>=0.28.1",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.17.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".claude"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/core/tests", "services/api/tests", "services/mcp/tests"]
+asyncio_mode = "auto"
+pythonpath = [".", "services/api/tests"]
+addopts = "--import-mode=importlib -m 'not live'"
+markers = [
+    "ocr: loads real EasyOCR models (skipped when they are not on disk)",
+    "live: calls the real LLM configured in .env (run with: pytest -m live -s)",
+    "models: loads the real embedding model (skipped when it is not on disk)",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["packages/core/src"]
+
+[[tool.mypy.overrides]]
+module = ["easyocr.*", "pypdfium2.*"]
+ignore_missing_imports = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["schemalens_core", "schemalens_api", "schemalens_mcp"]

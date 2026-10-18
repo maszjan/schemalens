@@ -1,0 +1,7 @@
+SchemaLens
+Copyright 2026 Adrian Rachlewicz
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It bundles the DejaVu Sans font for its test documents
+(packages/core/tests/assets/fonts/, license in LICENSE_DEJAVU there).
