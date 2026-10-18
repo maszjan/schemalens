@@ -1,0 +1,133 @@
+{
+  "name": "invoice",
+  "version": "2.0.0",
+  "title": "Invoice",
+  "description": "An invoice: the parties and their tax IDs, dates, totals, bank account and line items.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "invoice_number": {
+        "type": "string",
+        "description": "Invoice number"
+      },
+      "issue_date": {
+        "type": "string",
+        "description": "Date the invoice was issued",
+        "format": "date"
+      },
+      "sale_date": {
+        "type": "string",
+        "description": "Date of the sale or of the service",
+        "format": "date"
+      },
+      "due_date": {
+        "type": "string",
+        "description": "Payment due date",
+        "format": "date"
+      },
+      "seller_name": {
+        "type": "string",
+        "description": "Name of the seller (the issuer of the invoice)"
+      },
+      "seller_tax_id": {
+        "type": "string",
+        "description": "Seller's tax ID (VAT number)"
+      },
+      "buyer_name": {
+        "type": "string",
+        "description": "Name of the buyer"
+      },
+      "buyer_tax_id": {
+        "type": "string",
+        "description": "Buyer's tax ID (VAT number)"
+      },
+      "net_total": {
+        "type": "number",
+        "description": "Net total of the whole invoice"
+      },
+      "tax_total": {
+        "type": "number",
+        "description": "Total tax (VAT)"
+      },
+      "gross_total": {
+        "type": "number",
+        "description": "Gross amount to pay"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency of the invoice",
+        "x-schemalens-type": "currency"
+      },
+      "iban": {
+        "type": "string",
+        "description": "Bank account number for the payment",
+        "x-schemalens-type": "iban"
+      },
+      "items": {
+        "type": "array",
+        "description": "Line items of the invoice",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the goods or service"
+            },
+            "quantity": {
+              "type": "number",
+              "description": "Quantity"
+            },
+            "net_value": {
+              "type": "number",
+              "description": "Net value of the line"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "invoice_number",
+      "seller_name",
+      "gross_total"
+    ]
+  },
+  "example": {
+    "lines": [
+      "INVOICE No. INV/12/2026",
+      "Issue date: 03.10.2026",
+      "Date of supply: 01.10.2026",
+      "Seller: Example Trading Ltd",
+      "Seller VAT ID: GB123456789",
+      "Buyer: Demo Client Inc.",
+      "Buyer VAT ID: GB987654321",
+      "Maintenance service, 1 pc, 1,000.00",
+      "Net total: 1,000.00 GBP",
+      "VAT 20%: 200.00 GBP",
+      "Amount due: 1,200.00 GBP",
+      "Payment due: 17.10.2026",
+      "Account: GB82 WEST 1234 5698 7654 32"
+    ],
+    "data": {
+      "invoice_number": "INV/12/2026",
+      "issue_date": "2026-10-03",
+      "sale_date": "2026-10-01",
+      "due_date": "2026-10-17",
+      "seller_name": "Example Trading Ltd",
+      "seller_tax_id": "GB123456789",
+      "buyer_name": "Demo Client Inc.",
+      "buyer_tax_id": "GB987654321",
+      "net_total": 1000.0,
+      "tax_total": 200.0,
+      "gross_total": 1200.0,
+      "currency": "GBP",
+      "iban": "GB82WEST12345698765432",
+      "items": [
+        {
+          "name": "Maintenance service",
+          "quantity": 1.0,
+          "net_value": 1000.0
+        }
+      ]
+    }
+  }
+}

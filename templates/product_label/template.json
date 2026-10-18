@@ -1,0 +1,25 @@
+{
+  "preset": "product_label",
+  "lines": [
+    "ORANGE JUICE 100%",
+    "1 l",
+    "Ingredients: orange juice from concentrate",
+    "Energy: 45 kcal per 100 ml",
+    "Use by: 15.05.2026",
+    "Produced by: Example Drinks Ltd",
+    "Made in Spain"
+  ],
+  "data": {
+    "product_name": "ORANGE JUICE 100%",
+    "manufacturer": "Example Drinks Ltd",
+    "net_quantity": "1 l",
+    "ingredients": [
+      "orange juice from concentrate"
+    ],
+    "allergens": [],
+    "energy_kcal": 45.0,
+    "best_before": "2026-05-15",
+    "country_of_origin": "ES",
+    "category": "drink"
+  }
+}

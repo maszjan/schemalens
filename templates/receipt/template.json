@@ -1,0 +1,34 @@
+{
+  "preset": "receipt",
+  "lines": [
+    "EXAMPLE PHARMACY",
+    "9 Green Lane, Bristol",
+    "VAT no. GB987654321",
+    "SALES RECEIPT",
+    "02.03.2026",
+    "Plasters 1 pc 3.99",
+    "Raspberry syrup 1 pc 5.50",
+    "TOTAL GBP 9.49",
+    "Cash 10.00",
+    "Change 0.51"
+  ],
+  "data": {
+    "seller": "EXAMPLE PHARMACY",
+    "address": "9 Green Lane, Bristol",
+    "tax_id": "GB987654321",
+    "date": "2026-03-02",
+    "items": [
+      {
+        "name": "Plasters",
+        "price": 3.99
+      },
+      {
+        "name": "Raspberry syrup",
+        "price": 5.5
+      }
+    ],
+    "total": 9.49,
+    "currency": "GBP",
+    "payment_method": "cash"
+  }
+}

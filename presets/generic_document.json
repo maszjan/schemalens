@@ -1,0 +1,106 @@
+{
+  "name": "generic_document",
+  "version": "2.0.0",
+  "title": "Any document",
+  "description": "A general schema for documents without a preset of their own: what the document is, who and what it is about, key dates and amounts, and a summary.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "Title or heading of the document, if there is one"
+      },
+      "document_type": {
+        "type": "string",
+        "description": "Type of document judged from the content, e.g. note, announcement, e-mail, certificate",
+        "x-schemalens-derived": true
+      },
+      "language": {
+        "type": "string",
+        "description": "Language of the document as an ISO 639-1 code, e.g. en",
+        "x-schemalens-derived": true
+      },
+      "dates": {
+        "type": "array",
+        "description": "All dates mentioned in the document",
+        "items": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "people": {
+        "type": "array",
+        "description": "People mentioned by name",
+        "items": {
+          "type": "string"
+        }
+      },
+      "organizations": {
+        "type": "array",
+        "description": "Companies, institutions and organizations mentioned",
+        "items": {
+          "type": "string"
+        }
+      },
+      "amounts": {
+        "type": "array",
+        "description": "Amounts of money mentioned",
+        "items": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "description": "Value of the amount"
+            },
+            "currency": {
+              "type": "string",
+              "description": "Currency of the amount",
+              "x-schemalens-type": "currency"
+            }
+          }
+        }
+      },
+      "summary": {
+        "type": "string",
+        "description": "Summary of the document in 1-2 sentences, in the language of the document",
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "document_type",
+      "summary"
+    ]
+  },
+  "example": {
+    "lines": [
+      "NOTICE",
+      "Residents' Association of 7 Example Road",
+      "Water supply interruption on 12.11.2026",
+      "between 8:00 and 14:00.",
+      "Repair by Hydro Example Ltd, cost 4,500.00 GBP from the repair fund.",
+      "Contact: Anna Example, administrator"
+    ],
+    "data": {
+      "title": "NOTICE",
+      "document_type": "notice",
+      "language": "en",
+      "dates": [
+        "2026-11-12"
+      ],
+      "people": [
+        "Anna Example"
+      ],
+      "organizations": [
+        "Residents' Association of 7 Example Road",
+        "Hydro Example Ltd"
+      ],
+      "amounts": [
+        {
+          "value": 4500.0,
+          "currency": "GBP"
+        }
+      ],
+      "summary": "The residents' association announces a water supply interruption on 12 November 2026 for a repair costing 4,500 GBP from the repair fund."
+    }
+  }
+}

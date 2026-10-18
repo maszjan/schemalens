@@ -1,0 +1,154 @@
+{
+  "name": "cv",
+  "version": "2.0.0",
+  "title": "CV / résumé",
+  "description": "A professional résumé: contact details, experience, education, skills and an assessed seniority.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "full_name": {
+        "type": "string",
+        "description": "The candidate's full name"
+      },
+      "email": {
+        "type": "string",
+        "description": "E-mail address",
+        "format": "email"
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number",
+        "x-schemalens-type": "phone"
+      },
+      "city": {
+        "type": "string",
+        "description": "City of residence"
+      },
+      "current_position": {
+        "type": "string",
+        "description": "Current or most recent position"
+      },
+      "experience": {
+        "type": "array",
+        "description": "Employment history, most recent first",
+        "items": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "Employer"
+            },
+            "position": {
+              "type": "string",
+              "description": "Position"
+            },
+            "period": {
+              "type": "string",
+              "description": "Period of employment, as in the document"
+            }
+          }
+        }
+      },
+      "education": {
+        "type": "array",
+        "description": "Schools and fields of study completed",
+        "items": {
+          "type": "object",
+          "properties": {
+            "school": {
+              "type": "string",
+              "description": "Name of the university or school"
+            },
+            "field_of_study": {
+              "type": "string",
+              "description": "Field of study or specialization"
+            }
+          }
+        }
+      },
+      "skills": {
+        "type": "array",
+        "description": "Listed skills and technologies",
+        "items": {
+          "type": "string"
+        }
+      },
+      "languages": {
+        "type": "array",
+        "description": "Languages spoken, including the native one",
+        "items": {
+          "type": "string"
+        }
+      },
+      "seniority": {
+        "type": "string",
+        "description": "Seniority judged from the employment history",
+        "enum": [
+          "junior",
+          "mid",
+          "senior"
+        ],
+        "x-schemalens-derived": true
+      },
+      "summary": {
+        "type": "string",
+        "description": "Summary of the candidate's profile in 1-2 sentences",
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "full_name"
+    ]
+  },
+  "example": {
+    "lines": [
+      "John Example",
+      "Senior Python Developer",
+      "john.example@example.com, tel. +44 20 7946 0000, London",
+      "EXPERIENCE",
+      "2021-present: Example Software Ltd, Senior Python Developer",
+      "2018-2021: Demo Systems Inc., Developer",
+      "EDUCATION",
+      "Example University of Technology, Computer Science",
+      "SKILLS: Python, FastAPI, PostgreSQL, Docker",
+      "LANGUAGES: English, Polish"
+    ],
+    "data": {
+      "full_name": "John Example",
+      "email": "john.example@example.com",
+      "phone": "+442079460000",
+      "city": "London",
+      "current_position": "Senior Python Developer",
+      "experience": [
+        {
+          "company": "Example Software Ltd",
+          "position": "Senior Python Developer",
+          "period": "2021-present"
+        },
+        {
+          "company": "Demo Systems Inc.",
+          "position": "Developer",
+          "period": "2018-2021"
+        }
+      ],
+      "education": [
+        {
+          "school": "Example University of Technology",
+          "field_of_study": "Computer Science"
+        }
+      ],
+      "skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "languages": [
+        "English",
+        "Polish"
+      ],
+      "seniority": "senior",
+      "summary": "Senior Python developer with eight years of experience in backend software, working with FastAPI, PostgreSQL and Docker."
+    }
+  }
+}

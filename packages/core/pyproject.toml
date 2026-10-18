@@ -1,0 +1,26 @@
+[project]
+name = "schemalens-core"
+version = "0.1.0"
+description = "Document extraction engine: OCR + LLM + deterministic validation, any JSON Schema"
+readme = "README.md"
+authors = [
+    { name = "adi", email = "ma4shitm@gmail.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "chromadb>=1.5.9",
+    "easyocr>=1.7.2",
+    "openai>=3.29.0",
+    "pillow>=12.3.0",
+    "pydantic>=2.14.1",
+    "pydantic-settings>=2.15.0",
+    "pypdfium2>=5.14.0",
+    "python-dateutil>=2.9.0.post0",
+    "sentence-transformers>=6.1.0",
+    "torch>=2.14.1",
+    "torchvision>=0.29.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"

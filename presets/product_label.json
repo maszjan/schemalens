@@ -1,0 +1,97 @@
+{
+  "name": "product_label",
+  "version": "2.0.0",
+  "title": "Product label",
+  "description": "A product label: name, manufacturer, ingredients, allergens, energy value and best-before date.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "product_name": {
+        "type": "string",
+        "description": "Name of the product"
+      },
+      "manufacturer": {
+        "type": "string",
+        "description": "Name of the manufacturer"
+      },
+      "net_quantity": {
+        "type": "string",
+        "description": "Net weight or volume with its unit, e.g. 250 g"
+      },
+      "ingredients": {
+        "type": "array",
+        "description": "Ingredients in the order on the label",
+        "items": {
+          "type": "string"
+        }
+      },
+      "allergens": {
+        "type": "array",
+        "description": "Allergens named on the label",
+        "items": {
+          "type": "string"
+        }
+      },
+      "energy_kcal": {
+        "type": "number",
+        "description": "Energy value in kcal per 100 g or 100 ml"
+      },
+      "best_before": {
+        "type": "string",
+        "description": "Use-by or best-before date",
+        "format": "date"
+      },
+      "country_of_origin": {
+        "type": "string",
+        "description": "Country of origin",
+        "x-schemalens-type": "country"
+      },
+      "category": {
+        "type": "string",
+        "description": "Product category judged from the label",
+        "enum": [
+          "food",
+          "drink",
+          "cosmetic",
+          "household_chemical",
+          "other"
+        ],
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "product_name"
+    ]
+  },
+  "example": {
+    "lines": [
+      "MILK CHOCOLATE WITH HAZELNUTS",
+      "Net weight: 100 g",
+      "Ingredients: sugar, cocoa butter, milk powder, hazelnuts",
+      "Contains: milk, hazelnuts",
+      "Energy per 100 g: 545 kcal",
+      "Best before: 30.06.2027",
+      "Manufacturer: Sweet Factory Example Ltd",
+      "Country of origin: United Kingdom"
+    ],
+    "data": {
+      "product_name": "MILK CHOCOLATE WITH HAZELNUTS",
+      "manufacturer": "Sweet Factory Example Ltd",
+      "net_quantity": "100 g",
+      "ingredients": [
+        "sugar",
+        "cocoa butter",
+        "milk powder",
+        "hazelnuts"
+      ],
+      "allergens": [
+        "milk",
+        "hazelnuts"
+      ],
+      "energy_kcal": 545.0,
+      "best_before": "2027-06-30",
+      "country_of_origin": "GB",
+      "category": "food"
+    }
+  }
+}

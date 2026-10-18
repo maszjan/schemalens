@@ -1,0 +1,90 @@
+{
+  "name": "contract_terms",
+  "version": "2.0.0",
+  "title": "Contract terms",
+  "description": "The key terms of a contract: parties, dates, subject, remuneration, periods and penalties.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "contract_type": {
+        "type": "string",
+        "description": "Type of contract judged from the content, e.g. service agreement",
+        "x-schemalens-derived": true
+      },
+      "parties": {
+        "type": "array",
+        "description": "Parties to the contract (company names or full names)",
+        "items": {
+          "type": "string"
+        }
+      },
+      "signing_date": {
+        "type": "string",
+        "description": "Date the contract was signed",
+        "format": "date"
+      },
+      "place_of_signing": {
+        "type": "string",
+        "description": "Place where the contract was signed"
+      },
+      "subject": {
+        "type": "string",
+        "description": "Subject of the contract, as in the document"
+      },
+      "remuneration": {
+        "type": "number",
+        "description": "Amount of the remuneration or price"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency of the remuneration",
+        "x-schemalens-type": "currency"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "Date until which the contract is valid",
+        "format": "date"
+      },
+      "notice_period": {
+        "type": "string",
+        "description": "Notice period, as in the document"
+      },
+      "contractual_penalties": {
+        "type": "boolean",
+        "description": "Whether the contract provides for contractual penalties",
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "parties"
+    ]
+  },
+  "example": {
+    "lines": [
+      "SERVICE AGREEMENT",
+      "made on 1 September 2026 in Manchester",
+      "Client: Example Services Ltd",
+      "Contractor: John Example",
+      "1. Subject: maintenance of the website.",
+      "2. Fee: 5,000.00 GBP net per month.",
+      "3. The agreement is valid until 31.08.2027.",
+      "4. Notice period: 1 month.",
+      "5. A penalty of 100 GBP for each day of delay."
+    ],
+    "data": {
+      "contract_type": "service agreement",
+      "parties": [
+        "Example Services Ltd",
+        "John Example"
+      ],
+      "signing_date": "2026-09-01",
+      "place_of_signing": "Manchester",
+      "subject": "maintenance of the website",
+      "remuneration": 5000.0,
+      "currency": "GBP",
+      "end_date": "2027-08-31",
+      "notice_period": "1 month",
+      "contractual_penalties": true
+    }
+  }
+}

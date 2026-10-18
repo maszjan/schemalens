@@ -1,0 +1,100 @@
+{
+  "name": "receipt",
+  "version": "2.0.0",
+  "title": "Receipt",
+  "description": "A till receipt from a shop or a service point: seller, date, items and total.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "seller": {
+        "type": "string",
+        "description": "Name of the shop or point of sale"
+      },
+      "address": {
+        "type": "string",
+        "description": "Address of the point of sale"
+      },
+      "tax_id": {
+        "type": "string",
+        "description": "Seller's tax ID (VAT number)"
+      },
+      "date": {
+        "type": "string",
+        "description": "Date of the sale",
+        "format": "date"
+      },
+      "items": {
+        "type": "array",
+        "description": "Items bought",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the item"
+            },
+            "price": {
+              "type": "number",
+              "description": "Price of the item"
+            }
+          }
+        }
+      },
+      "total": {
+        "type": "number",
+        "description": "Total amount to pay"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency",
+        "x-schemalens-type": "currency"
+      },
+      "payment_method": {
+        "type": "string",
+        "description": "Payment method shown on the receipt",
+        "enum": [
+          "cash",
+          "card",
+          "other"
+        ],
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "seller",
+      "total"
+    ]
+  },
+  "example": {
+    "lines": [
+      "EXAMPLE GROCERY STORE",
+      "1 Test Street, Springfield",
+      "VAT ID GB123456789",
+      "RECEIPT",
+      "15.10.2026",
+      "Rye bread 1 pc 2.49",
+      "Milk 2% 1 pc 1.29",
+      "TOTAL GBP 3.78",
+      "Card payment 3.78"
+    ],
+    "data": {
+      "seller": "EXAMPLE GROCERY STORE",
+      "address": "1 Test Street, Springfield",
+      "tax_id": "GB123456789",
+      "date": "2026-10-15",
+      "items": [
+        {
+          "name": "Rye bread",
+          "price": 2.49
+        },
+        {
+          "name": "Milk 2%",
+          "price": 1.29
+        }
+      ],
+      "total": 3.78,
+      "currency": "GBP",
+      "payment_method": "card"
+    }
+  }
+}

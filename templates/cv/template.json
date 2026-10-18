@@ -1,0 +1,51 @@
+{
+  "preset": "cv",
+  "lines": [
+    "MARIA DEMO",
+    "Data Analyst",
+    "maria.demo@example.org | +1 555 0100 | Boston",
+    "WORK HISTORY",
+    "Data Analyst, Sample Retail Corp., 2022 - now",
+    "Junior Analyst, Example Bank, 2020 - 2022",
+    "EDUCATION",
+    "Sample State University - Statistics",
+    "SKILLS SQL, Python, Tableau",
+    "LANGUAGES English, Spanish"
+  ],
+  "data": {
+    "full_name": "MARIA DEMO",
+    "email": "maria.demo@example.org",
+    "phone": "+15550100",
+    "city": "Boston",
+    "current_position": "Data Analyst",
+    "experience": [
+      {
+        "company": "Sample Retail Corp.",
+        "position": "Data Analyst",
+        "period": "2022 - now"
+      },
+      {
+        "company": "Example Bank",
+        "position": "Junior Analyst",
+        "period": "2020 - 2022"
+      }
+    ],
+    "education": [
+      {
+        "school": "Sample State University",
+        "field_of_study": "Statistics"
+      }
+    ],
+    "skills": [
+      "SQL",
+      "Python",
+      "Tableau"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "seniority": "mid",
+    "summary": "Data analyst with about six years of experience in retail and banking, working with SQL, Python and Tableau."
+  }
+}

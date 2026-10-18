@@ -1,0 +1,21 @@
+{
+  "preset": "lecture_notes",
+  "lines": [
+    "NOTES - Microeconomics",
+    "Seminar, 21.10.2026, Prof. Mark Demo",
+    "* supply and demand",
+    "* elasticity",
+    "* market equilibrium"
+  ],
+  "data": {
+    "topic": "Microeconomics",
+    "date": "2026-10-21",
+    "lecturer": "Prof. Mark Demo",
+    "key_concepts": [
+      "supply and demand",
+      "elasticity",
+      "market equilibrium"
+    ],
+    "summary": "Seminar notes on microeconomics: supply and demand, elasticity and market equilibrium."
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "name": "menu",
+  "version": "2.0.0",
+  "title": "Menu",
+  "description": "A restaurant menu: items with prices and sections, and its overall character.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "venue_name": {
+        "type": "string",
+        "description": "Name of the restaurant or venue"
+      },
+      "items": {
+        "type": "array",
+        "description": "Menu items",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the dish or drink"
+            },
+            "price": {
+              "type": "number",
+              "description": "Price"
+            },
+            "section": {
+              "type": "string",
+              "description": "Menu section the item is in"
+            }
+          }
+        }
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency of the prices",
+        "x-schemalens-type": "currency"
+      },
+      "cuisine": {
+        "type": "string",
+        "description": "Type of cuisine judged from the items, in a word or a short phrase",
+        "x-schemalens-derived": true
+      },
+      "vegetarian_options": {
+        "type": "boolean",
+        "description": "Whether the menu has dishes without meat or fish",
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "items"
+    ]
+  },
+  "example": {
+    "lines": [
+      "THE EXAMPLE KITCHEN",
+      "SOUPS",
+      "Tomato soup 6 GBP",
+      "Pea and mint soup 6 GBP",
+      "MAINS",
+      "Fish and chips 15 GBP",
+      "Roast chicken with potatoes 17 GBP",
+      "DESSERTS",
+      "Apple crumble 7 GBP"
+    ],
+    "data": {
+      "venue_name": "THE EXAMPLE KITCHEN",
+      "items": [
+        {
+          "name": "Tomato soup",
+          "price": 6.0,
+          "section": "SOUPS"
+        },
+        {
+          "name": "Pea and mint soup",
+          "price": 6.0,
+          "section": "SOUPS"
+        },
+        {
+          "name": "Fish and chips",
+          "price": 15.0,
+          "section": "MAINS"
+        },
+        {
+          "name": "Roast chicken with potatoes",
+          "price": 17.0,
+          "section": "MAINS"
+        },
+        {
+          "name": "Apple crumble",
+          "price": 7.0,
+          "section": "DESSERTS"
+        }
+      ],
+      "currency": "GBP",
+      "cuisine": "british",
+      "vegetarian_options": true
+    }
+  }
+}

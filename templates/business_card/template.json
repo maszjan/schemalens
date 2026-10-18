@@ -1,0 +1,23 @@
+{
+  "preset": "business_card",
+  "lines": [
+    "DEMO LOGISTICS",
+    "Peter Sample",
+    "Head of Operations",
+    "mobile: +49 151 2345678",
+    "peter.sample@demo-logistics.example",
+    "demo-logistics.example",
+    "Hafenstraße 12, 20457 Hamburg"
+  ],
+  "data": {
+    "full_name": "Peter Sample",
+    "job_title": "Head of Operations",
+    "company": "DEMO LOGISTICS",
+    "email": "peter.sample@demo-logistics.example",
+    "phone": "+491512345678",
+    "website": "demo-logistics.example",
+    "street": "Hafenstraße 12",
+    "postal_code": "20457",
+    "city": "Hamburg"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "preset": "generic_document",
+  "lines": [
+    "CERTIFICATE OF COMPLETION",
+    "This certifies that Tom Sample",
+    "completed the course Safe Driving",
+    "organised by Example Driving School on 05.06.2026.",
+    "Course fee: 150.00 EUR"
+  ],
+  "data": {
+    "title": "CERTIFICATE OF COMPLETION",
+    "document_type": "certificate",
+    "language": "en",
+    "dates": [
+      "2026-06-05"
+    ],
+    "people": [
+      "Tom Sample"
+    ],
+    "organizations": [
+      "Example Driving School"
+    ],
+    "amounts": [
+      {
+        "value": 150.0,
+        "currency": "EUR"
+      }
+    ],
+    "summary": "Tom Sample completed the Safe Driving course organised by Example Driving School on 5 June 2026."
+  }
+}

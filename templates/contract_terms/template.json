@@ -1,0 +1,28 @@
+{
+  "preset": "contract_terms",
+  "lines": [
+    "LEASE AGREEMENT",
+    "signed on 10 January 2026 in Leeds",
+    "Landlord: Anna Example",
+    "Tenant: Demo Cafe Ltd",
+    "1. Subject: lease of the commercial unit at 3 Long Street.",
+    "2. Rent: 3,200.00 GBP per month.",
+    "3. The lease is for an indefinite period.",
+    "4. Notice period: 3 months."
+  ],
+  "data": {
+    "contract_type": "lease agreement",
+    "parties": [
+      "Anna Example",
+      "Demo Cafe Ltd"
+    ],
+    "signing_date": "2026-01-10",
+    "place_of_signing": "Leeds",
+    "subject": "lease of the commercial unit at 3 Long Street",
+    "remuneration": 3200.0,
+    "currency": "GBP",
+    "end_date": null,
+    "notice_period": "3 months",
+    "contractual_penalties": false
+  }
+}

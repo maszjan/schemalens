@@ -1,0 +1,63 @@
+{
+  "name": "lecture_notes",
+  "version": "2.0.0",
+  "title": "Lecture notes",
+  "description": "Printed notes from a lecture or a class: topic, date, lecturer, key concepts and a summary.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "topic": {
+        "type": "string",
+        "description": "Topic of the class or of the note"
+      },
+      "date": {
+        "type": "string",
+        "description": "Date of the class",
+        "format": "date"
+      },
+      "lecturer": {
+        "type": "string",
+        "description": "The person teaching the class, as written in the note"
+      },
+      "key_concepts": {
+        "type": "array",
+        "description": "The most important concepts listed in the note",
+        "items": {
+          "type": "string"
+        }
+      },
+      "summary": {
+        "type": "string",
+        "description": "Summary of the note in 1-2 sentences, in the language of the note",
+        "x-schemalens-derived": true
+      }
+    },
+    "required": [
+      "topic"
+    ]
+  },
+  "example": {
+    "lines": [
+      "LECTURE NOTES",
+      "Topic: Neural networks",
+      "Date: 07.10.2026",
+      "Lecturer: Dr Anna Example",
+      "- perceptron",
+      "- activation function",
+      "- backpropagation",
+      "- overfitting"
+    ],
+    "data": {
+      "topic": "Neural networks",
+      "date": "2026-10-07",
+      "lecturer": "Dr Anna Example",
+      "key_concepts": [
+        "perceptron",
+        "activation function",
+        "backpropagation",
+        "overfitting"
+      ],
+      "summary": "Lecture notes on neural networks: the perceptron, activation functions, backpropagation and overfitting."
+    }
+  }
+}

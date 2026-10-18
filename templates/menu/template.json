@@ -1,0 +1,41 @@
+{
+  "preset": "menu",
+  "lines": [
+    "TRATTORIA DEMO",
+    "Pizza",
+    "Margherita ....... 9 EUR",
+    "Funghi ....... 11 EUR",
+    "Pasta",
+    "Carbonara ....... 12 EUR",
+    "Drinks",
+    "Lemonade ....... 4 EUR"
+  ],
+  "data": {
+    "venue_name": "TRATTORIA DEMO",
+    "items": [
+      {
+        "name": "Margherita",
+        "price": 9.0,
+        "section": "Pizza"
+      },
+      {
+        "name": "Funghi",
+        "price": 11.0,
+        "section": "Pizza"
+      },
+      {
+        "name": "Carbonara",
+        "price": 12.0,
+        "section": "Pasta"
+      },
+      {
+        "name": "Lemonade",
+        "price": 4.0,
+        "section": "Drinks"
+      }
+    ],
+    "currency": "EUR",
+    "cuisine": "italian",
+    "vegetarian_options": true
+  }
+}

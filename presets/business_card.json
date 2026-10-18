@@ -1,0 +1,75 @@
+{
+  "name": "business_card",
+  "version": "2.0.0",
+  "title": "Business card",
+  "description": "A business card: the person, their job title, the company and contact details.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "full_name": {
+        "type": "string",
+        "description": "The person's full name"
+      },
+      "job_title": {
+        "type": "string",
+        "description": "Job title or position"
+      },
+      "company": {
+        "type": "string",
+        "description": "Name of the company or organization"
+      },
+      "email": {
+        "type": "string",
+        "description": "E-mail address",
+        "format": "email"
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number",
+        "x-schemalens-type": "phone"
+      },
+      "website": {
+        "type": "string",
+        "description": "Website address",
+        "x-schemalens-type": "url"
+      },
+      "street": {
+        "type": "string",
+        "description": "Street with the building number"
+      },
+      "postal_code": {
+        "type": "string",
+        "description": "Postal code"
+      },
+      "city": {
+        "type": "string",
+        "description": "City"
+      }
+    },
+    "required": [
+      "full_name"
+    ]
+  },
+  "example": {
+    "lines": [
+      "Anna Example",
+      "Sales Manager",
+      "Demo Company Ltd",
+      "tel. +44 20 7946 0100",
+      "anna.example@example.com",
+      "www.example.com",
+      "5 Long Street, London SW1A 1AA"
+    ],
+    "data": {
+      "full_name": "Anna Example",
+      "job_title": "Sales Manager",
+      "company": "Demo Company Ltd",
+      "email": "anna.example@example.com",
+      "phone": "+442079460100",
+      "website": "www.example.com",
+      "street": "5 Long Street",
+      "postal_code": "SW1A 1AA",
+      "city": "London"
+    }
+  }
+}

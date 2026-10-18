@@ -1,0 +1,43 @@
+{
+  "preset": "invoice",
+  "lines": [
+    "INVOICE 2026/045",
+    "Date of issue: 12/02/2026",
+    "Supplier: Demo Print Studio",
+    "VAT no.: DE811111111",
+    "Customer: Example Bakery GmbH",
+    "Business cards, 500 pcs, 80.00",
+    "Flyers, 1000 pcs, 120.00",
+    "Subtotal: 200.00 EUR",
+    "VAT 19%: 38.00 EUR",
+    "Total: 238.00 EUR",
+    "Due by: 26/02/2026"
+  ],
+  "data": {
+    "invoice_number": "2026/045",
+    "issue_date": "2026-02-12",
+    "sale_date": null,
+    "due_date": "2026-02-26",
+    "seller_name": "Demo Print Studio",
+    "seller_tax_id": "DE811111111",
+    "buyer_name": "Example Bakery GmbH",
+    "buyer_tax_id": null,
+    "net_total": 200.0,
+    "tax_total": 38.0,
+    "gross_total": 238.0,
+    "currency": "EUR",
+    "iban": null,
+    "items": [
+      {
+        "name": "Business cards",
+        "quantity": 500.0,
+        "net_value": 80.0
+      },
+      {
+        "name": "Flyers",
+        "quantity": 1000.0,
+        "net_value": 120.0
+      }
+    ]
+  }
+}
