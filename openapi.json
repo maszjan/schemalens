@@ -1,0 +1,1089 @@
+{
+  "components": {
+    "schemas": {
+      "DemoInfo": {
+        "description": "What the landing site needs to know about this deployment.",
+        "properties": {
+          "daily_documents": {
+            "title": "Daily Documents",
+            "type": "integer"
+          },
+          "max_pages": {
+            "title": "Max Pages",
+            "type": "integer"
+          },
+          "max_upload_bytes": {
+            "title": "Max Upload Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_upload_bytes",
+          "max_pages",
+          "daily_documents"
+        ],
+        "title": "DemoInfo",
+        "type": "object"
+      },
+      "ExtractJsonRequest": {
+        "description": "JSON variant of an extraction request. Send `schema`, `preset`, or both.",
+        "examples": [
+          {
+            "document_base64": "<base64>",
+            "preset": "business_card"
+          },
+          {
+            "document_base64": "<base64>",
+            "schema": {
+              "properties": {
+                "cost_category": {
+                  "enum": [
+                    "fuel",
+                    "equipment",
+                    "services",
+                    "other"
+                  ],
+                  "type": "string",
+                  "x-schemalens-derived": true
+                },
+                "currency": {
+                  "type": "string",
+                  "x-schemalens-type": "currency"
+                },
+                "issue_date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "seller_name": {
+                  "description": "Name of the seller",
+                  "type": "string"
+                },
+                "total_gross": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "seller_name",
+                "total_gross"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "document_base64": "<base64>",
+            "options": {
+              "include_ocr_text": true,
+              "model_tier": "accurate"
+            },
+            "preset": "business_card",
+            "schema": {
+              "properties": {
+                "industry": {
+                  "description": "Industry of the company",
+                  "type": "string",
+                  "x-schemalens-derived": true
+                }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "properties": {
+          "document_base64": {
+            "description": "The document (JPEG, PNG, WEBP, TIFF or PDF), base64",
+            "title": "Document Base64",
+            "type": "string"
+          },
+          "options": {
+            "$ref": "#/components/schemas/ExtractionOptions"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Name of a preset from GET /api/v1/presets",
+            "title": "Preset"
+          },
+          "schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "JSON Schema of the fields to extract. With `preset`, it extends the preset.",
+            "title": "Schema"
+          }
+        },
+        "required": [
+          "document_base64"
+        ],
+        "title": "ExtractJsonRequest",
+        "type": "object"
+      },
+      "ExtractMultipartRequest": {
+        "description": "Multipart variant of an extraction request (documentation only).",
+        "properties": {
+          "file": {
+            "description": "The document (JPEG, PNG, WEBP, TIFF or PDF)",
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Options as a JSON string, e.g. {\"model_tier\": \"accurate\"}",
+            "title": "Options"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Name of a preset from GET /api/v1/presets",
+            "title": "Preset"
+          },
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "JSON Schema as a JSON string",
+            "title": "Schema"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "ExtractMultipartRequest",
+        "type": "object"
+      },
+      "ExtractResponse": {
+        "examples": [
+          {
+            "data": {
+              "issue_date": "2026-05-15",
+              "seller_name": "Example Sp. z o.o.",
+              "total_gross": 312.45
+            },
+            "fields": {
+              "issue_date": {
+                "confidence": 0.86,
+                "evidence": [
+                  "L004"
+                ]
+              },
+              "seller_name": {
+                "confidence": 0.93,
+                "evidence": [
+                  "L002"
+                ]
+              },
+              "total_gross": {
+                "confidence": 0.9,
+                "evidence": [
+                  "L011"
+                ]
+              }
+            },
+            "usage": {
+              "completion_tokens": 270,
+              "effort_escalations": 0,
+              "llm_calls": 1,
+              "llm_ms": 640,
+              "model": "openai/gpt-oss-20b",
+              "ocr_ms": 2310,
+              "pages": 1,
+              "prompt_tokens": 925,
+              "prompt_version": "2026-10-13.3",
+              "reasoning_effort": "medium"
+            },
+            "warnings": [
+              "issue_date: normalized '15 maja 2026 r.' to '2026-05-15'"
+            ]
+          }
+        ],
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldMeta"
+            },
+            "title": "Fields",
+            "type": "object"
+          },
+          "ocr_text": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Text"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data",
+          "fields",
+          "warnings",
+          "usage"
+        ],
+        "title": "ExtractResponse",
+        "type": "object"
+      },
+      "ExtractionOptions": {
+        "properties": {
+          "include_ocr_text": {
+            "default": false,
+            "title": "Include Ocr Text",
+            "type": "boolean"
+          },
+          "model_tier": {
+            "default": "fast",
+            "enum": [
+              "fast",
+              "accurate"
+            ],
+            "title": "Model Tier",
+            "type": "string"
+          }
+        },
+        "title": "ExtractionOptions",
+        "type": "object"
+      },
+      "ExtractionResult": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldMeta"
+            },
+            "title": "Fields",
+            "type": "object"
+          },
+          "ocr_text": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Text"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data",
+          "fields",
+          "warnings",
+          "usage"
+        ],
+        "title": "ExtractionResult",
+        "type": "object"
+      },
+      "FieldMeta": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          }
+        },
+        "required": [
+          "confidence",
+          "evidence"
+        ],
+        "title": "FieldMeta",
+        "type": "object"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "Health",
+        "type": "object"
+      },
+      "PresetField": {
+        "properties": {
+          "derived": {
+            "default": false,
+            "description": "Inferred from the content, not copied",
+            "title": "Derived",
+            "type": "boolean"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "required": {
+            "default": false,
+            "title": "Required",
+            "type": "boolean"
+          },
+          "semantic_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Value of x-schemalens-type",
+            "title": "Semantic Type"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "PresetField",
+        "type": "object"
+      },
+      "PresetInfo": {
+        "examples": [
+          {
+            "description": "A business card: the person, their job title, the company and contact details.",
+            "fields": [
+              {
+                "derived": false,
+                "description": "Phone number",
+                "name": "phone",
+                "required": false,
+                "semantic_type": "phone",
+                "type": "string"
+              }
+            ],
+            "name": "business_card",
+            "title": "Business card",
+            "version": "2.0.0"
+          }
+        ],
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/PresetField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "title",
+          "description",
+          "fields"
+        ],
+        "title": "PresetInfo",
+        "type": "object"
+      },
+      "PresetList": {
+        "properties": {
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PresetInfo"
+            },
+            "title": "Presets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "presets"
+        ],
+        "title": "PresetList",
+        "type": "object"
+      },
+      "Problem": {
+        "description": "RFC 9457 problem details.",
+        "examples": [
+          {
+            "detail": "The schema was rejected, see errors.",
+            "errors": [
+              "total: unsupported or missing type 'money'"
+            ],
+            "instance": "req_0f8d79d2c1a4",
+            "status": 422,
+            "title": "Invalid schema",
+            "type": "https://schemalens.space/docs#error-invalid-schema"
+          }
+        ],
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Errors"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instance"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail"
+        ],
+        "title": "Problem",
+        "type": "object"
+      },
+      "RenderRequest": {
+        "description": "A result the client already has, turned into a file. Nothing is extracted or stored.",
+        "properties": {
+          "labels": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "XLSX only: readable names for the column headings, by field path (e.g. {\"gross_total\": \"Gross total\"}); without it the headings are the paths",
+            "title": "Labels"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The preset sent with the extraction, if any",
+            "title": "Preset"
+          },
+          "result": {
+            "$ref": "#/components/schemas/ExtractionResult",
+            "description": "The response of POST /api/v1/extract"
+          },
+          "schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The schema sent with the extraction, if any",
+            "title": "Schema"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "RenderRequest",
+        "type": "object"
+      },
+      "Usage": {
+        "properties": {
+          "completion_tokens": {
+            "title": "Completion Tokens",
+            "type": "integer"
+          },
+          "context": {
+            "default": "full",
+            "enum": [
+              "full",
+              "retrieval",
+              "truncated"
+            ],
+            "title": "Context",
+            "type": "string"
+          },
+          "effort_escalations": {
+            "default": 0,
+            "title": "Effort Escalations",
+            "type": "integer"
+          },
+          "fewshot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fewshot"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "llm_calls": {
+            "title": "Llm Calls",
+            "type": "integer"
+          },
+          "llm_ms": {
+            "title": "Llm Ms",
+            "type": "integer"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "ocr_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Confidence"
+          },
+          "ocr_ms": {
+            "title": "Ocr Ms",
+            "type": "integer"
+          },
+          "pages": {
+            "title": "Pages",
+            "type": "integer"
+          },
+          "prompt_tokens": {
+            "title": "Prompt Tokens",
+            "type": "integer"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "reasoning_effort": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Effort"
+          }
+        },
+        "required": [
+          "pages",
+          "ocr_ms",
+          "llm_ms",
+          "prompt_tokens",
+          "completion_tokens",
+          "llm_calls",
+          "model",
+          "prompt_version"
+        ],
+        "title": "Usage",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Send a document (photo, scan, PDF, screenshot) with a preset or a JSON Schema and get validated JSON back, with a confidence and evidence for every field.\n\nEvery call except `/healthz` and the docs needs an API key: `Authorization: Bearer <key>` or `X-API-Key`. Documents are processed in memory and never stored. Errors are RFC 9457 problem documents.\n",
+    "title": "SchemaLens API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/demo": {
+      "get": {
+        "operationId": "demo_info",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Limits of this demo deployment",
+        "tags": [
+          "extraction"
+        ]
+      }
+    },
+    "/api/v1/extract": {
+      "post": {
+        "description": "Send a document with a `preset`, a `schema`, or both (the schema extends the preset).\n\nThe document is processed in memory and forgotten: nothing is written to disk, logged or\nkept. The demo takes small documents (see `GET /api/v1/demo`) and a few per day per address.\n\nThe result comes as JSON (with confidence, evidence, timings and the detected language),\nCSV or XLSX (`?format=` or `Accept`). With `?stream=true` the JSON result is preceded\nby progress events (NDJSON), so a client can show what is happening while it waits.",
+        "operationId": "extract_document",
+        "parameters": [
+          {
+            "description": "Result format; wins over the Accept header. Default: json.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Result format; wins over the Accept header. Default: json.",
+              "enum": [
+                "json",
+                "csv",
+                "xlsx"
+              ],
+              "title": "Format"
+            }
+          },
+          {
+            "description": "CSV only: add a `<field>__confidence` column for every scalar field.",
+            "in": "query",
+            "name": "include_meta",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "CSV only: add a `<field>__confidence` column for every scalar field.",
+              "title": "Include Meta",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "JSON only: answer with `application/x-ndjson`, one event per line as the work goes on (`accepted`, `reading`, `read`, `extracting`, then `result` or `error`). Events carry counts and timings, never document text; `result` is the usual JSON body.",
+            "in": "query",
+            "name": "stream",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "JSON only: answer with `application/x-ndjson`, one event per line as the work goes on (`accepted`, `reading`, `read`, `extracting`, then `result` or `error`). Events carry counts and timings, never document text; `result` is the usual JSON body.",
+              "title": "Stream",
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractJsonRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractMultipartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractResponse"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/csv": {
+                "example": "seller_name,total_gross,items.name,items.price\r\nExample,312.45,Paliwo,300.0\r\n",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unknown format or unsupported Accept"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Document too large for the demo"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unsupported document or request type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Invalid schema, request or unreadable document"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Daily demo limit reached, or all slots busy"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "The language model failed"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "The language model provider is rate limiting"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Gateway Timeout"
+          }
+        },
+        "summary": "Extract fields from a document",
+        "tags": [
+          "extraction"
+        ]
+      }
+    },
+    "/api/v1/presets": {
+      "get": {
+        "description": "Ready-made schemas. Use a preset by name in `preset`, optionally extended by `schema`.",
+        "operationId": "list_presets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List schema presets",
+        "tags": [
+          "extraction"
+        ]
+      }
+    },
+    "/api/v1/render": {
+      "post": {
+        "description": "The export buttons of the demo: the result the browser already has, as a file. No\nextraction runs again, and nothing is stored or logged.",
+        "operationId": "render_result",
+        "parameters": [
+          {
+            "description": "Result format; wins over the Accept header. Default: json.",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Result format; wins over the Accept header. Default: json.",
+              "enum": [
+                "json",
+                "csv",
+                "xlsx"
+              ],
+              "title": "Format"
+            }
+          },
+          {
+            "description": "CSV only: add a `<field>__confidence` column for every scalar field.",
+            "in": "query",
+            "name": "include_meta",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "CSV only: add a `<field>__confidence` column for every scalar field.",
+              "title": "Include Meta",
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/csv": {
+                "example": "seller_name,total_gross,items.name,items.price\r\nExample,312.45,Paliwo,300.0\r\n",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Not Acceptable"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Turn a result into CSV or XLSX",
+        "tags": [
+          "extraction"
+        ]
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "healthz",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Liveness check",
+        "tags": [
+          "service"
+        ]
+      }
+    }
+  }
+}

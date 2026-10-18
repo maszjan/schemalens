@@ -1,0 +1,29 @@
+[project]
+name = "schemalens-api"
+version = "0.1.0"
+description = "Stateless HTTP API for SchemaLens (FastAPI), local or on AWS Lambda"
+readme = "README.md"
+authors = [
+    { name = "adi", email = "ma4shitm@gmail.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "boto3>=1.43.113",
+    "fastapi>=0.143.0",
+    "httpx>=0.28.1",
+    "openpyxl>=3.1.5",
+    "python-multipart>=0.0.32",
+    "scalar-fastapi>=1.9.1",
+    "schemalens-core",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[project.scripts]
+schemalens-api = "schemalens_api.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+schemalens-core = { workspace = true }

@@ -1,0 +1,56 @@
+# docker compose up --build                          -> API on :8000 (docs at /docs)
+# docker compose --profile dev up --build api-dev    -> API with hot reload on :8001
+# docker compose --profile local-llm up              -> + Ollama in a container
+#                                                       (set DOCKER_LOCAL_BASE_URL=http://ollama:11434/v1)
+# Locally the demo limits are kept in the API's memory; on AWS in DynamoDB (infra/template.yaml).
+x-api: &api
+  env_file: .env
+  environment:
+    # Inside the container localhost is the container, not the host running Ollama.
+    LOCAL_BASE_URL: ${DOCKER_LOCAL_BASE_URL:-${LOCAL_BASE_URL:-http://host.docker.internal:11434/v1}}
+    ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+    # A local 11B model needs about a minute per document; AWS (Groq) keeps the 60 s default.
+    SYNC_TIMEOUT_S: ${SYNC_TIMEOUT_S:-240}
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  deploy:
+    resources:
+      limits:
+        memory: 4g
+
+x-build: &build
+  context: .
+  dockerfile: services/api/Dockerfile
+  args:
+    APP: ${APP:-schemalens}
+
+services:
+  api:
+    <<: *api
+    build:
+      <<: *build
+      target: runtime
+    image: ${APP:-schemalens}-api:local
+    ports: ["${API_PORT:-8000}:8000"]
+    restart: unless-stopped
+
+  api-dev:
+    <<: *api
+    build:
+      <<: *build
+      target: dev
+    image: ${APP:-schemalens}-api:dev
+    profiles: ["dev"]
+    ports: ["${API_DEV_PORT:-8001}:8000"]
+    volumes:
+      - ./packages/core/src:/app/packages/core/src
+      - ./services/api/src:/app/services/api/src
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local-llm"]
+    volumes: ["ollama:/root/.ollama"]
+    ports: ["11434:11434"]
+
+volumes:
+  ollama: {}
