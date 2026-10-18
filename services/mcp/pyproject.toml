@@ -1,0 +1,19 @@
+[project]
+name = "schemalens-mcp"
+version = "0.1.0"
+description = "MCP server for SchemaLens: let AI agents extract fields from documents through the API"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp>=2.3.0",
+    "pydantic-settings>=2.15.0",
+]
+
+[project.scripts]
+schemalens-mcp = "schemalens_mcp.server:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
