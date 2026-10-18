@@ -1,0 +1,328 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SchemaLens on AWS, a starting template to adapt: one Lambda (container image with EasyOCR) behind
+  API Gateway with API keys and a usage plan, the LLM of your choice. Stateless: no database,
+  documents are processed in memory and forgotten. Optional public demo mode adds a streaming
+  Function URL for a demo page (a demo key, per-address daily counters in DynamoDB).
+
+Parameters:
+  LlmProfile:
+    Type: String
+    AllowedValues: [openai, groq]
+    Default: openai
+    Description: openai = any OpenAI-compatible endpoint (OpenAI, Azure OpenAI, vLLM...); groq = Groq
+  LlmApiKey:
+    Type: String
+    NoEcho: true
+    Description: API key of the LLM endpoint (better from Secrets Manager in production, see infra/README.md)
+  LlmBaseUrl:
+    Type: String
+    Default: https://api.openai.com/v1
+    Description: Base URL of the OpenAI-compatible endpoint (ignored for groq)
+  LlmModel:
+    Type: String
+    Default: gpt-4.1-mini
+    Description: Model name, e.g. gpt-4.1-mini (openai) or openai/gpt-oss-20b (groq)
+  ThrottleRateLimit:
+    Type: Number
+    Default: 2
+    Description: Steady requests per second per API key (usage plan)
+  ThrottleBurstLimit:
+    Type: Number
+    Default: 5
+  DailyQuota:
+    Type: Number
+    Default: 500
+    Description: Documents per API key per day (usage plan)
+  MaxConcurrency:
+    Type: Number
+    Default: 3
+    MinValue: 0
+    Description: Cost guard - at most this many documents are processed at the same time; 0 = no reservation (the account limit applies; for new accounts, whose quota of 10 cannot be reserved from)
+  BudgetEmail:
+    Type: String
+    Description: Who gets the monthly cost alert
+  MonthlyBudgetUsd:
+    Type: Number
+    Default: 5
+  KillSwitchInvocations:
+    Type: Number
+    Default: 600
+    MinValue: 1
+    Description: Cost guard - more invocations than this in 5 minutes switches the service off (concurrency 0) and emails BudgetEmail; real use stays far below
+  PublicDemo:
+    Type: String
+    AllowedValues: ["false", "true"]
+    Default: "false"
+    Description: true = also a Function URL for a public demo page, called with DemoKey and limited per address
+  DemoKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Public demo only - the key the demo page sends (schemalens-api keys new --demo); it is visible in the browser, so it only identifies the page
+  IpSalt:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Public demo only - random secret; addresses are counted only as salted hashes
+  AllowedOrigins:
+    Type: String
+    Default: http://localhost:3000
+    Description: Public demo only - browser origin(s) of the demo page, comma-separated (CORS)
+  DailyDocumentsPerAddress:
+    Type: Number
+    Default: 10
+    Description: Public demo only
+  DailyDocumentsTotal:
+    Type: Number
+    Default: 500
+    Description: Public demo only
+
+Rules:
+  DemoNeedsAKey:
+    RuleCondition: !Equals [!Ref PublicDemo, "true"]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref DemoKey, ""]]
+        AssertDescription: PublicDemo=true needs a DemoKey (schemalens-api keys new --demo)
+
+Conditions:
+  HasReservation: !Not [!Equals [!Ref MaxConcurrency, 0]]
+  IsDemo: !Equals [!Ref PublicDemo, "true"]
+
+Globals:
+  Function:
+    Architectures: [arm64]
+
+Resources:
+  # The service: API Gateway (REST) checks the API key and applies the usage plan (throttling,
+  # a daily quota), so the function itself keeps no state.
+  ServiceApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      BinaryMediaTypes: ["*/*"] # uploads (multipart) and XLSX answers pass through unchanged
+      Auth:
+        ApiKeyRequired: true
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Throttle:
+            RateLimit: !Ref ThrottleRateLimit
+            BurstLimit: !Ref ThrottleBurstLimit
+          Quota:
+            Limit: !Ref DailyQuota
+            Period: DAY
+
+  ServiceFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      DockerContext: ..
+      Dockerfile: services/api/Dockerfile
+      DockerTag: lambda
+      DockerBuildTarget: lambda
+    Properties:
+      PackageType: Image
+      MemorySize: 3008 # more memory = more CPU for the OCR
+      Timeout: 90
+      ReservedConcurrentExecutions: !If [HasReservation, !Ref MaxConcurrency, !Ref AWS::NoValue]
+      Environment:
+        Variables:
+          ACTIVE_LLM_PROFILE: !Ref LlmProfile
+          OPENAI_API_KEY: !Ref LlmApiKey
+          OPENAI_BASE_URL: !Ref LlmBaseUrl
+          OPENAI_MODEL_FAST: !Ref LlmModel
+          OPENAI_MODEL_ACCURATE: !Ref LlmModel
+          GROQ_API_KEY: !Ref LlmApiKey
+          GROQ_MODEL_FAST: !Ref LlmModel
+          GROQ_MODEL_ACCURATE: !Ref LlmModel
+          MAX_CONCURRENT_JOBS: 1
+          # API Gateway invokes buffered; only the demo's Function URL streams.
+          AWS_LWA_INVOKE_MODE: !If [IsDemo, response_stream, buffered]
+          # API Gateway checks the service keys; the function accepts what it let through.
+          GATEWAY_KEYS: "true"
+          # The demo's Function URL: the page's key, its calls limited per address.
+          DEMO_KEYS: !If [IsDemo, !Ref DemoKey, ""]
+          LIMITS_TABLE: !If [IsDemo, !Ref LimitsTable, ""]
+          IP_SALT: !Ref IpSalt
+          ALLOWED_ORIGINS: !Ref AllowedOrigins
+          DEMO_DAILY_DOCUMENTS: !Ref DailyDocumentsPerAddress
+          DEMO_GLOBAL_DAILY_DOCUMENTS: !Ref DailyDocumentsTotal
+      Policies:
+        - !If
+          - IsDemo
+          - Statement:
+              - Effect: Allow
+                Action: dynamodb:UpdateItem
+                Resource: !GetAtt LimitsTable.Arn
+          - !Ref AWS::NoValue
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServiceApi
+            Path: /{proxy+}
+            Method: ANY
+        Health:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServiceApi
+            Path: /healthz
+            Method: GET
+            Auth:
+              ApiKeyRequired: false
+        WarmUp:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            # Not HTTP: the adapter posts it to /internal/warm-up (AWS_LWA_PASS_THROUGH_PATH).
+            Input: '{"warmup": true}'
+
+  ServiceLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ServiceFunction}
+      RetentionInDays: 7 # metadata only, and not for long
+
+  # --- public demo only ---------------------------------------------------------------------
+
+  DemoUrl:
+    Type: AWS::Lambda::Url
+    Condition: IsDemo
+    Properties:
+      TargetFunctionArn: !GetAtt ServiceFunction.Arn
+      AuthType: NONE # the app checks the demo key, CORS and the per-address limits
+      InvokeMode: RESPONSE_STREAM # live NDJSON progress
+
+  DemoUrlPermission:
+    Type: AWS::Lambda::Permission
+    Condition: IsDemo
+    Properties:
+      FunctionName: !Ref ServiceFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  # Function URLs need lambda:InvokeFunction too, limited to calls through the URL itself.
+  DemoUrlInvokePermission:
+    Type: AWS::Lambda::Permission
+    Condition: IsDemo
+    Properties:
+      FunctionName: !Ref ServiceFunction
+      Action: lambda:InvokeFunction
+      Principal: "*"
+      InvokedViaFunctionUrl: true
+
+  # Counters only: a salted hash of the address, the day, a number. No documents, no results.
+  LimitsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: IsDemo
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+
+  # --- cost guard ---------------------------------------------------------------------------
+
+  CostAlert:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub ${AWS::StackName}-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref BudgetEmail
+
+  # Kill switch: a flood of calls (even rejected ones are billed) stops the function within
+  # minutes. Turn it back on (a redeploy does not undo it):
+  #   aws lambda put-function-concurrency --function-name <ServiceFunction> --reserved-concurrent-executions <MaxConcurrency>
+  #   or, with MaxConcurrency=0: aws lambda delete-function-concurrency --function-name <ServiceFunction>
+  CostAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref BudgetEmail
+
+  InvocationFlood:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: !Sub "SchemaLens: over ${KillSwitchInvocations} invocations in 5 minutes - the service was switched off"
+      Namespace: AWS/Lambda
+      MetricName: Invocations
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ServiceFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref KillSwitchInvocations
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref CostAlarmTopic
+
+  KillSwitch:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 30
+      MemorySize: 128
+      Environment:
+        Variables:
+          TARGET: !Ref ServiceFunction
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: lambda:PutFunctionConcurrency
+              Resource: !GetAtt ServiceFunction.Arn
+      InlineCode: |
+        import os
+
+        import boto3
+
+
+        def handler(event, context):
+            # Concurrency 0: every call is rejected by AWS (not billed) until turned back on.
+            boto3.client("lambda").put_function_concurrency(
+                FunctionName=os.environ["TARGET"], ReservedConcurrentExecutions=0
+            )
+            return {"stopped": os.environ["TARGET"]}
+      Events:
+        Alarm:
+          Type: SNS
+          Properties:
+            Topic: !Ref CostAlarmTopic
+
+Outputs:
+  ApiUrl:
+    Description: Base URL of the service, e.g. <ApiUrl>/api/v1/extract with the header x-api-key
+    Value: !Sub https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/prod
+  ApiKeyId:
+    Description: >
+      Id of the generated API key; its value: aws apigateway get-api-key --api-key <id> --include-value
+    Value: !Ref ServiceApiApiKey
+  ServiceFunctionName:
+    Description: The function the kill switch stops; turn it back on with put-function-concurrency
+    Value: !Ref ServiceFunction
+  DemoUrl:
+    Condition: IsDemo
+    Description: Streaming URL for a public demo page (NEXT_PUBLIC_API_URL; the page sends DemoKey)
+    Value: !GetAtt DemoUrl.FunctionUrl
